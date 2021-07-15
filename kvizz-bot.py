@@ -47,11 +47,19 @@ def open_kvizz():
     element.click()
 
 def email_manipulator(email):
-    # Skeytir unix timestamp aftan við tölvupóstfang
-    # t.d. notandi+1234@gmail.com
-    timestamp = int(time.time())
+    # Bætir punktum við í email á mismunandi index sem samsvarar
+    # fjölda sek í unix timestamp
+    # t.d. f....r...e.e..._.......burger_generator@protonmail.com
     email_first, email_second = email.split('@')
-    email = email_first + '+' + str(timestamp) + '@' + email_second
+    timestamp = str(int(time.time()))[5:]
+
+    index = 5
+    for number in timestamp:
+        number_of_dots = '.' * (int(number) + 1)
+        email_first = email_first[:index] + number_of_dots + email_first[index:]
+        index -= 1
+
+    email = email_first + '@' + email_second
     return email
 
 def kvizz_setup(name, email, phone):
