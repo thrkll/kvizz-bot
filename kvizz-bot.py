@@ -6,7 +6,7 @@ import time
 
 # Stillingar
 number_of_rounds = 2000
-name = 'Jón Jónsson'
+name = 'Séra Jón Jónsson'
 email = 'free_burger_generator@protonmail.com'
 phone = '5554433'
 
@@ -14,15 +14,16 @@ phone = '5554433'
 driver = webdriver.Firefox()
 
 def main():
+    email_combos = dot_combinations(email)
+    open_kvizz()
+
     win_count = 0
     for round in range(number_of_rounds):
         # Prentar tölfræði um hvað er búið að spila og vinna marga leiki
         print(f'Rounds: {round + 1}/{number_of_rounds}\tWins: {win_count}',
             end='\r')
 
-        if round == 0:
-            open_kvizz()
-        kvizz_setup(name, email, phone)
+        kvizz_setup(name, email_combos, phone)
         answers = read_answers()
 
         for each_question in range(5):
@@ -46,30 +47,20 @@ def open_kvizz():
     element = element_maker('button.ch2-btn:nth-child(1)')
     element.click()
 
-def email_manipulator(email):
-    # Bætir punktum við í email á mismunandi index sem samsvarar
-    # fjölda sek í unix timestamp
-    # t.d. f....r...e.e..._.......burger_generator@protonmail.com
-    email_first, email_second = email.split('@')
-    timestamp = str(int(time.time()))[5:]
-
-    index = 5
-    for number in timestamp:
-        number_of_dots = '.' * (int(number) + 1)
-        email_first = email_first[:index] + number_of_dots + email_first[index:]
-        index -= 1
-
-    email = email_first + '@' + email_second
+def email_manipulator(email_combos):
+    # Email nr. 2 í lista verður email nr. 1 í næsta leik o.s.frv.
+    email = email_combos[0]
+    del email_combos[0]
     return email
 
-def kvizz_setup(name, email, phone):
+def kvizz_setup(name, email_combos, phone):
     # Setur inn nafn
     element = element_maker('#name')
     element.clear()
     element.send_keys(name)
 
     # Setur inn tölvupóstfang
-    email = email_manipulator(email)
+    email = email_manipulator(email_combos)
     element = element_maker('#email')
     element.clear()
     element.send_keys(email)
@@ -134,7 +125,38 @@ def play_again():
     return outcome
 
 def element_maker(css_sl):
-    return WebDriverWait(driver, 5).until(
+    return WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, css_sl)))
+
+def dot_combinations(email):
+    # Skilar lista af emails með punktum. T.d.
+    #   f.ree_burger_generator
+    #   f.r.ree_burger_generator
+    #   ...
+    # Bottinn getur spilað ca. 3600 leiki á dag. Til að email verði ekki endur-
+    # tekið þarf fyrri hluti emails að vera a.m.k. 13 stafir (2^12 = 4096)
+    # https://stackoverflow.com/a/50023811
+
+    temp, email_second = email.split('@')
+
+    count = 0
+    combinations = []
+    while count.bit_length() < len(temp):
+        current_word = []
+        for index, letter in enumerate(temp):
+            current_word.append(letter)
+            if (1 << index) & count:
+                current_word.append(".")
+
+        email_first = "".join(current_word)
+        email = email_first + '@' + email_second
+        combinations.append(email)
+        count += 1
+
+        # Óþarft að búa til fleiri samsetningar en fjöldi umferða sem á að spila
+        if count == number_of_rounds:
+            break
+
+    return combinations
 
 main()
