@@ -35,7 +35,7 @@ def main():
 def read_answers():
     # Les svör úr answers.csv og vistar í answers
     answers = []
-    with open('answers.csv', encoding='utf-8') as f:
+    with open('answers.csv', 'a+', encoding='utf-8') as f:
         for line in f:
             answers.append(line.rstrip('\n'))
     return answers
