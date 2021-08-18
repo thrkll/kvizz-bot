@@ -5,8 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 # Stillingar
-number_of_rounds = 2000
-name = 'Séra Jón Jónsson'
+number_of_rounds = 3600
+name = 'github.com/thrkll/kvizz-bot'
 email = 'free_burger_generator@protonmail.com'
 phone = '5554433'
 
@@ -35,7 +35,7 @@ def main():
 def read_answers():
     # Les svör úr answers.csv og vistar í answers
     answers = []
-    with open('answers.csv', 'a+', encoding='utf-8') as f:
+    with open('answers.csv', encoding='utf-8') as f:
         for line in f:
             answers.append(line.rstrip('\n'))
     return answers
@@ -125,6 +125,11 @@ def play_again():
     return outcome
 
 def element_maker(css_sl):
+    # Bíður eftir að loader verði 'display: none'
+    while True:
+        if not driver.find_elements_by_class_name('loader')[0].is_displayed():
+            break
+
     return WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, css_sl)))
 
