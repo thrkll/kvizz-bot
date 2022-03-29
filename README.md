@@ -6,7 +6,9 @@ The bot can score unlimited coupons for overpriced candy bars. But please don't 
 
 ~~July 15th 2021 - The bot does not work any more as the quiz prevents the email format used.~~
 
-July 21st 2021 - It's working again!
+~~July 21st 2021 - It's working again!~~
+
+September 1st 2021 - The game is now offline. 
 
 ![Could not load demo](https://github.com/thrkll/kvizz-bot/blob/main/demo.gif "Three instances of the bot")
 
